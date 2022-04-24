@@ -20,7 +20,7 @@ class EncoderBlock(nn.Module):
         self.norm1 = nn.LayerNorm(self.embed_size)
         self.norm2 = nn.LayerNorm(self.embed_size)
         self.feed_fwd = nn.Sequential(
-                nn.Linear(embed_size, fwd_expansion * embed_size)
+                nn.Linear(embed_size, fwd_expansion * embed_size),
                 nn.RelU(),
                 nn.Linear(embed_size * fwd_expansion, embed_size)
                 )
