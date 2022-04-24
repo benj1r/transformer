@@ -41,7 +41,7 @@ class SelfAttention(nn.Module):
         keys = self.keys(values)
         queries = self.queries(values)
 
-        attention = torch.softmax(scaled_dot_attention(values, keys, queries, mask),dim=3)
+        attention = torch.softmax(scaled_dot_attention(queries, keys, mask),dim=3)
         out = torch.einsum("nhql,nlhd->nqhd", [attention, values]).reshape(
                 N, queries_len, self.heads * self.head_dim)
         out = self.fc(out)
