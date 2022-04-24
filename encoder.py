@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+from attention import MultiHeadAttention
 
 class EncoderBlock(nn.Module):
     def __init__(
@@ -9,11 +10,28 @@ class EncoderBlock(nn.Module):
             heads,
             dropout,
             fwd_expansion):
-        pass
+        super(EncoderBlock, self).__init__()
+        
+        self.embed_size = embed_size
+        self.heads = heads
+        self.fwd_expansion = fwd_expansion
+        
+        self.MHA = MultiHeadAttention(self.embed_size, self.heads)
+        self.norm1 = nn.LayerNorm(self.embed_size)
+        self.norm2 = nn.LayerNorm(self.embed_size)
+        self.feed_fwd = nn.Sequential(
+                nn.Linear(embed_size, fwd_expansion * embed_size)
+                nn.RelU(),
+                nn.Linear(embed_size * fwd_expansion, embed_size)
+                )
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, values, keys, queries, mask):
-        pass
-
+        attention = self.MHA(values, keys, queries, mask)
+        x = self.dropout(self.norm1(attention + query))
+        fwd = self.feed_fwd(x)
+        out = self.dropout(self.norm2(fwd + x))
+        return out
 
 class Encoder(nn.Module):
     def __init__(

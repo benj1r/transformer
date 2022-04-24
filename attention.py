@@ -2,12 +2,12 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-class SelfAttention(nn.Module):
+class MultiHeadAttention(nn.Module):
     def __init__(
             self,
             embed_size,
             heads):
-        super(SelfAttention, self).__init__()
+        super(MultiHeadAttention, self).__init__()
 
         self.embed_size = embed_size
         self.heads = heads
@@ -28,7 +28,7 @@ class SelfAttention(nn.Module):
         e = (e / self.embed_size ** (1/2))
         return e
 
-    def forward(self, values, keys, queries):
+    def forward(self, values, keys, queries, mask):
         N = queries.shape[0]
 
         values_len, keys_len, queries_len = values.shape[1], keys.shape[1], queries.shape[1]
