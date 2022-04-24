@@ -45,8 +45,38 @@ class Encoder(nn.Module):
             dropout,
             max_len
             ):
-        pass
+        super(Encoder, self).__init__()
+        
+        self.vocab_size = vocab_size
+        self.embed_size = embed_size
+        self.num_layers = num_layers
+        self.heads = heads
+        self.device = device
+        self.fwd_expansion = fwd_expansion
+        self.dropout = dropout
+        self.max_len = max_len
+        
+        self.vocab_embedding = nn.Embedding(self.vocab_size, self.embed_size)
+        self.position_embedding = nn.Embedding(max_len, embed_size)
+
+        self.layers = nn.ModuleList(
+                [ 
+                    EncoderBlock(self.embed_size,
+                        self.heads,
+                        self.dropout,
+                        fwd_expansion)
+                    for _ in range(self.num_layers)
+                    ]
+                )
+        self.dropout = nn.Dropout(self.dropout)
 
     def forward(self, x, mask):
-        pass
+        N, seq_len = x.shape
 
+        positions = torch.arange(0,seq_len).expand(N, seq_len).to(self.device)
+        out = self.dropout(self.vocab_embedding(x) + self.position_embedding(positions))
+
+        for layer in self.layers:
+            out = layer(out, out, out, mask)
+
+        return out
