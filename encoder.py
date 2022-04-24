@@ -64,7 +64,7 @@ class Encoder(nn.Module):
                     EncoderBlock(self.embed_size,
                         self.heads,
                         self.dropout,
-                        fwd_expansion)
+                        self.fwd_expansion)
                     for _ in range(self.num_layers)
                     ]
                 )

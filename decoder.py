@@ -9,8 +9,8 @@ class DecoderBlock(nn.Module):
             self,
             embed_size,
             heads,
-            fwd_expansion,
             dropout,
+            fwd_expansion,
             device
             ):
         super(DecoderBlock, self).__init__()
@@ -45,8 +45,42 @@ class Decoder(nn.Module):
             device,
             max_len
             ):
-        pass
+        super(Decoder, self).__init__()
+        
+        self.vocab_size = vocab_size
+        self.embed_size = embed_size
+        self.num_layers = num_layers
+        self.heads = heads
+        self.device = device
+        self.fwd_expansion = fwd_expansion
+        self.dropout = dropout
+        self.max_len = max_len
+        
+        self.vocab_embedding = nn.Embedding(self.vocab_size, self.embed_size)
+        self.position_embedding = nn.Embedding(max_len, embed_size)
 
+        self.layers = nn.ModuleList(
+                [ 
+                    DecoderBlock(self.embed_size,
+                        self.heads,
+                        self.dropout,
+                        self.fwd_expansion,
+                        self.device)
+                    for _ in range(self.num_layers)
+                    ]
+                )
+        
+        self.fc = nn.Linear(embed_size, vocab_size)
+        self.dropout = nn.Dropout(self.dropout)
+        
     def forward(self, x, enc_out, src_mask, trg_mask):
-        pass
+        N, seq_len = x.shape
 
+        positions = torch.arange(0,seq_len).expand(N, seq_len).to(self.device)
+        x = self.dropout(self.vocab_embedding(x) + self.position_embedding(positions))
+
+        for layer in self.layers:
+            x = layer(x, enc_out, enc_out, src_mask, trg_mask)
+        
+        out = self.fc(x)
+        return out
