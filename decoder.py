@@ -21,14 +21,14 @@ class DecoderBlock(nn.Module):
         self.dropout = dropout
         self.device = device
 
-        self.MHA = MultiHeadAttention(self.embed_size)
+        self.MHA = MultiHeadAttention(self.embed_size, self.heads)
         self.norm = nn.LayerNorm(self.embed_size)
         self.block = EncoderBlock(self.embed_size, self.heads, self.dropout, self.fwd_expansion)
         self.dropout = nn.Dropout(self.dropout)
 
     def forward(self, x, values, keys, src_mask, trg_mask):
         masked_attention = self.MHA(x, x, x, trg_mask)
-        queries = self.dropout(self.norm(attention+x))
+        queries = self.dropout(self.norm(masked_attention+x))
         out = self.block(values, keys, queries, src_mask)
         return out
 

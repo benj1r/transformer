@@ -19,9 +19,9 @@ class MultiHeadAttention(nn.Module):
         self.keys = nn.Linear(self.head_dim, self.head_dim, bias=False)
         self.queries = nn.Linear(self.head_dim, self.head_dim, bias=False)
     
-        self.fc = nn.Linear(heads * head_dim, embed_size)
+        self.fc = nn.Linear(heads * self.head_dim, embed_size)
 
-    def scaled_dot_attention(q, k, mask): 
+    def scaled_dot_attention(self, q, k, mask): 
         e = torch.einsum('nqhd,nkhd->nhqk', [q, k])
         if mask is not None:
             e = e.masked_fill(mask==0, -1e20)
@@ -40,8 +40,8 @@ class MultiHeadAttention(nn.Module):
         values = self.values(values)
         keys = self.keys(values)
         queries = self.queries(values)
-
-        attention = torch.softmax(scaled_dot_attention(queries, keys, mask),dim=3)
+        
+        attention = torch.softmax(self.scaled_dot_attention(queries, keys, mask) ,dim=3)
         out = torch.einsum("nhql,nlhd->nqhd", [attention, values]).reshape(
                 N, queries_len, self.heads * self.head_dim)
         out = self.fc(out)

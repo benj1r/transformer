@@ -21,14 +21,14 @@ class EncoderBlock(nn.Module):
         self.norm2 = nn.LayerNorm(self.embed_size)
         self.feed_fwd = nn.Sequential(
                 nn.Linear(embed_size, fwd_expansion * embed_size),
-                nn.RelU(),
+                nn.ReLU(),
                 nn.Linear(embed_size * fwd_expansion, embed_size)
                 )
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, values, keys, queries, mask):
         attention = self.MHA(values, keys, queries, mask)
-        x = self.dropout(self.norm1(attention + query))
+        x = self.dropout(self.norm1(attention + queries))
         fwd = self.feed_fwd(x)
         out = self.dropout(self.norm2(fwd + x))
         return out
