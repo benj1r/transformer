@@ -10,8 +10,8 @@ def main():
     device = torch.device("cpu") #= torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
 
-    x = [[1,5,6,4,3,9,2,1], [2,6,7,5,4,1,3,1]].to(device)
-    y = [[2,6,7,5,4,1,3,1], [1,5,6,4,3,9,2,1]].to(device)
+    x = torch.tensor([[1,5,6,4,3,9,2,1], [2,6,7,5,4,1,3,1]]).to(device)
+    y = torch.tensor([[2,6,7,5,4,1,3,1], [1,5,6,4,3,9,2,1]]).to(device)
 
     src_vocab = 10
     trg_vocab = 10
