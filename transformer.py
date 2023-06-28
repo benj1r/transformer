@@ -11,13 +11,13 @@ class Transformer(nn.Module):
             trg_vocab,
             src_pad,
             trg_pad,
-            embed_size,
-            num_layers,
-            fwd_expansion,
-            heads,
-            dropout,
-            device,
-            max_len):
+            embed_size=256,
+            num_layers=4,
+            fwd_expansion=4,
+            heads=8,
+            dropout=0,
+            device="cpu",
+            max_len=100):
         super(Transformer, self).__init__()
 
         self.encoder = Encoder(
@@ -51,7 +51,6 @@ class Transformer(nn.Module):
         return src_mask.to(self.device)
 
     def gen_trg_mask(self, trg):
-        print(trg.shape)
         N, trg_len = trg.shape
         mask = torch.tril(torch.ones((trg_len, trg_len))).expand(N, 1, trg_len, trg_len)
         return mask.to(self.device)
