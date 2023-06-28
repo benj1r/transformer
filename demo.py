@@ -28,11 +28,9 @@ def main():
     # training parameters
 
     # optimizer
-    # optimizer = optim.Adam(model.parameters(), lr=lr)
-
 
     out = model(x, y)
-    print(out[0])
+    print(out)
     
 if __name__ == "__main__":
     main()
