@@ -4,3 +4,10 @@ Reference: ["Attention is All you Need" (Vaswani, A. et al., 2017)](https://arxi
 ---
 ### PyTorch Demo and Examples
 ###### These demo files and example notebooks are located in `examples/`
+
+---
+### Todo
+- [x] ~~finish model architecture~~
+- [ ] Wrap codebase into python package
+- [ ] publish on PyPI
+- [ ] sentiment analysis example
